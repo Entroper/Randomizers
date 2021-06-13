@@ -50,6 +50,10 @@ namespace FF1Lib
 
 		#endregion
 
+		public bool LooseItemsForwardPlacement { get; set; } = true;
+
+		public bool LooseItemsSpreadPlacement { get; set; } = true;
+
 		public SpellNameMadness SpellNameMadness { get; set; } = SpellNameMadness.None;
 
 		public EnemyObfuscation EnemyObfuscation { get; set; } = EnemyObfuscation.None;

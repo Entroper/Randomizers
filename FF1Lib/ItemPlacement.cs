@@ -510,6 +510,8 @@ namespace FF1Lib
 
 			do
 			{
+				var balancedPicker = new RewardSourcePicker( 0.5, 8.5, _checker);
+
 				_sanityCounter++;
 				if (_sanityCounter > 20) throw new InsaneException("Item Placement could not meet incentivization requirements!");
 				// 1. (Re)Initialize lists inside of loop
@@ -582,7 +584,9 @@ namespace FF1Lib
 						if (rewardSources.Any())
 						{
 							itemPool.Remove(item);
-							placedItems.Add(NewItemPlacement(rewardSources.PickRandom(rng), item));
+							var rewardSource = balancedPicker.Pick(rewardSources, _flags.LooseItemsForwardPlacement && !isIncentive, _flags.LooseItemsSpreadPlacement, rng);
+							placedItems.Add(NewItemPlacement(rewardSource, item));
+
 						}
 					}
 				}
@@ -622,6 +626,8 @@ namespace FF1Lib
 				// and there are lots of incentive locations, leftoverItemLocations pool may be small.
 				foreach (var leftoverItem in leftoverItems)
 				{
+					if (!leftoverItemLocations.Any()) continue;
+
 					placedItems.Add(NewItemPlacement(leftoverItemLocations.SpliceRandom(rng), leftoverItem));
 				}
 
@@ -630,8 +636,9 @@ namespace FF1Lib
 				    leftoverItemLocations = preBlackOrbLocationPool.Where(x => !placedItems.Any(y => y.Address == x.Address)
 											  && _checker.IsRewardSourceAccessible(x, fulfilledRequirements, accessibleMapLocations)).ToList();
 				    foreach (var shard in shards)
-				    {
-					placedItems.Add(NewItemPlacement(leftoverItemLocations.SpliceRandom(rng), shard));
+					{
+						if (!leftoverItemLocations.Any()) continue;
+						placedItems.Add(NewItemPlacement(leftoverItemLocations.SpliceRandom(rng), shard));
 				    }
 				}
 
